@@ -28,6 +28,14 @@ func handleConnection(conn net.Conn) {
 
 	log.Println("Closing connection: ", conn)	
 	mutex.Lock()
+
+	// delete the client
 	delete(clients, conn)
+
+	// remove the client from all the channels
+	for channel, _ := range channels {
+		delete(channels[channel], client)
+	}
+
 	mutex.Unlock()
 }
