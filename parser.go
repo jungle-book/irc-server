@@ -35,6 +35,10 @@ func parseIRCMessage(raw string) IRCMessage {
 		msg.Command = parts[0]
 		if len(parts) > 1 {
 			msg.Params = parts[1:]
+
+			if strings.Contains(parts[1], "#") {
+				msg.IsChannel = true
+			}
 		}
 	}
 
