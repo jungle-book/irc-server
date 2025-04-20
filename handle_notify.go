@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func handlePrivMessage(client *Client, msg IRCMessage) {
+func handleNotifyCommand(client *Client, msg IRCMessage) {
 	target := msg.Params[0]
 
 	mutex.Lock()

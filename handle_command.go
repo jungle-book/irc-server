@@ -9,5 +9,11 @@ func handleCommand(client *Client, command string) {
 		handleJoinCommand(client, msg)
 	case "USER":
 		handleUserCommand(client, msg)
+	case "NICK":
+		handleNickCommand(client, msg)
+	case "PING":
+		handlePingCommand(client, msg)
+	case "PRIVMSG":
+		handleNotifyCommand(client, msg)
 	}
 }
