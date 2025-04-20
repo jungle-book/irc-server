@@ -1,14 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func handlePrivMessage(client *Client, msg IRCMessage) {
 	target := msg.Params[0]
-	
+
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	if msg.IsChannel {
+	if strings.Contains(msg.Params[0], "#") {
 		if members, exists := channels[target]; exists {
 			for member := range members {
 				if member.username != client.username {

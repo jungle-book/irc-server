@@ -1,47 +1,65 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"strings"
 )
 
 type IRCMessage struct {
-	Prefix string
-	Command string
-	Params []string
+	Source   string
+	Command  string
+	Params   []string
 	Trailing string
-	IsChannel bool
 }
 
-func parseIRCMessage(raw string) IRCMessage {
+func (m IRCMessage) Log() {
+	log.Println("IRC Message:", "source:", m.Source, "command:", m.Command, "params:", m.Params, "trailing:", m.Trailing)
+}
+
+func (m IRCMessage) Encode() string {
+	return fmt.Sprintf(":%s %s %s :%s", m.Source, m.Command, strings.Join(m.Params, " "), m.Trailing)
+}
+
+func parseIRCMessage(message string) IRCMessage {
 	var msg IRCMessage
+	msg.Params = make([]string, 0)
+	/*
+		[:{source} ]{command}[ parameters][ :{trailing}]
+	*/
 
-	// Step 1: Extract prefix if present
-	if strings.HasPrefix(raw, ":") {
-		split := strings.SplitN(raw[1:], " ", 2)
-		msg.Prefix = split[0]
-		raw = split[1]
+	// remove the source from the message if it has one
+	if message[0] == ':' {
+		parts := strings.SplitN(message, " ", 2)
+		msg.Source = parts[0]
+		message = parts[1]
 	}
 
-	// Step 2: Extract trailing param (after last " :")
-	var trailing string
-	if idx := strings.Index(raw, " :"); idx != -1 {
-		trailing = raw[idx+2:]
-		raw = raw[:idx]
-	}
+	parts := getToken(message)
+	msg.Command = parts[0]
+	message = parts[1]
 
-	// Step 3: Split command and parameters
-	parts := strings.Fields(raw)
-	if len(parts) > 0 {
-		msg.Command = parts[0]
-		if len(parts) > 1 {
-			msg.Params = parts[1:]
-
-			if strings.Contains(parts[1], "#") {
-				msg.IsChannel = true
-			}
+	for message != "" {
+		if message[0] == ':' {
+			msg.Trailing = strings.TrimSpace(message[1:])
+			break
 		}
+
+		parts = getToken(message)
+		msg.Params = append(msg.Params, parts[0])
+
+		message = parts[1]
 	}
 
-	msg.Trailing = trailing
 	return msg
+}
+
+func getToken(s string) []string {
+	split := strings.SplitN(s, " ", 2)
+
+	if len(split) == 1 {
+		return []string{split[0], ""}
+	}
+
+	return split
 }
