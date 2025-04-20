@@ -2,24 +2,18 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"log"
 )
 
 func handleCommand(client *Client, command string) {
-	parts := strings.SplitN(command, " ", 2)
-	cmd := strings.ToUpper(parts[0])
+	msg := parseIRCMessage(command)
+	log.Println("Message from client: ", client, msg)
 
-	arg := ""
-	if len(parts) > 1 {
-		arg = parts[1]
-	}
-
-	switch cmd {
+	switch msg.Command {
 	case "NICK":
-		client.nick = arg
+		client.nick = msg.Params[0]
 		client.ch <- fmt.Sprintf("Welcome, %s!", client.nick)
 	default:
 		client.ch <- "Unknown command"
 	}
-
 }
