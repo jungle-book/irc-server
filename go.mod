@@ -1,3 +1,3 @@
-module github.com/rabbit-backend/irc-server
+module github.com/irc-server
 
 go 1.24.1
