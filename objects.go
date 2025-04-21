@@ -1,12 +1,11 @@
 package main
 
 import (
-	"net"
 	"sync"
 )
 
 var (
-	clients = make(map[net.Conn]*Client)
+	clients  = make(map[string]*Client)
 	channels = make(map[string](map[*Client]bool))
-	mutex sync.Mutex
+	mutex    sync.Mutex
 )

@@ -12,10 +12,6 @@ func handleConnection(conn net.Conn) {
 
 	client := &Client{conn: conn, ch: make(chan string)}
 
-	mutex.Lock()
-	clients[conn] = client
-	mutex.Unlock()
-
 	go writeToClient(client)
 
 	scanner := bufio.NewScanner(conn)
@@ -28,7 +24,7 @@ func handleConnection(conn net.Conn) {
 	mutex.Lock()
 
 	// delete the client
-	delete(clients, conn)
+	delete(clients, client.username)
 
 	// remove the client from all the channels
 	for channel := range channels {
